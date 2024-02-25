@@ -29,6 +29,7 @@ def main():
         output = f"news_{date}.epub"
         title = f"News {date}"
         subprocess.run(["pandoc", *glob(f"{d}/*.md"), "--metadata", f'title="{title}"', '--toc', '--toc-depth=1', '-o', output])   
+        print(f"GENERATED={output}")
 
 
 if __name__ == '__main__':

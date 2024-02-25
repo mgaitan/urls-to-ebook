@@ -30,13 +30,16 @@ jobs:
         pip install markdownify
 
     - name: Run script
+      id: run-script
       env:
         URLS: ${{ inputs.URLS }}
-      run: python news.py
+      run: python news.py >> $GITHUB_OUTPUT
 
     - name: Publish release
       uses: softprops/action-gh-release@v1
       with:
-        files: "*.epub"
+        files: ${{ steps.run-script.output.GENERATED }}
+        name: ${{ steps.run-script.output.GENERATED }}
+        draft: True
         body: "Include ${{ inputs.URLS }}"
         token: ${{ secrets.GITHUB_TOKEN }}
