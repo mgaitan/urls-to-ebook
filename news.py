@@ -29,7 +29,7 @@ def main():
         output = f"news_{date}.epub"
         title = f"News {date}"
         subprocess.run(["pandoc", *glob(f"{d}/*.md"), "--metadata", f'title="{title}"', '--toc', '--toc-depth=1', '-o', output])
-        subprocess.run(["ebook-converter", output, f"{output}.mobi"])
+        subprocess.run(["ebook-convert", output, f"{output}.mobi"])
         print(list(Path(d).iter_dir()))
 
 
