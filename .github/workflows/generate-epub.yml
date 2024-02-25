@@ -37,6 +37,6 @@ jobs:
     - name: Publish release
       uses: softprops/action-gh-release@v1
       with:
-        files: *.epub
-        body: Include ${{ inputs.URLS }}
+        files: "*.epub"
+        body: "Include ${{ inputs.URLS }}"
         token: ${{ secrets.GITHUB_TOKEN }}
