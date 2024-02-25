@@ -1,10 +1,10 @@
-name: Generate EPUB from URLs
+name: Generate and ebook from a list of URLs
 
 on:
   workflow_dispatch:
     inputs:
       URLS:
-        description: 'List of URLs to include in the EPUB, separated by ;'
+        description: 'List of URLs to include in the ebook, separated by ;'
         required: true
         type: string
       send-to:
@@ -13,11 +13,15 @@ on:
         required: false
         default: gaitan@kindle.com
       commit:
-        description: 'Commit the epub to the repo'
+        description: 'Commit the ebook (mobi) to the repo'
         required: false
-        type: boolean
-        default: false      
-      
+        type: choice
+        default: none
+        options: 
+          - none
+          - epub
+          - mobi
+          - both
 
 permissions:
   contents: write
@@ -46,7 +50,7 @@ jobs:
         URLS: ${{ inputs.URLS }}
       run: python news.py 
 
-    - name: Send to kindle by mail
+    - name: Send by mail
       uses: dawidd6/action-send-mail@v3
       if: inputs.send-to
       with:
@@ -65,13 +69,18 @@ jobs:
         attachments: "*.mobi"
         
     - name: Commit and push
-      if: inputs.commit
+      if: inputs.commit != "none" 
       run: |-
-        rm *.epub
-        mv *.mobi ebooks
+        if [ "${{ inputs.commit }}" = "mobi" ]; then
+          mv *.mobi ebooks/
+        elif [ "${{ inputs.commit }}" = "epub" ]; then
+          mv *.epub ebooks/
+        elif [ "${{ inputs.commit }}" = "both" ]; then
+          mv *.mobi ebooks/
+          mv *.epub ebooks/
+        fi
         git config user.name "Automated"
         git config user.email "actions@users.noreply.github.com"
-        git add -A
-        timestamp=$(date -u)
-        git commit -m "New epub added ${timestamp}" || exit 0
+        git add ebooks/*.mobi
+        git commit -m "New epub/s added" || exit 0
         git push
