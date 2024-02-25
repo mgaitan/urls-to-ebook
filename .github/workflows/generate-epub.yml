@@ -48,7 +48,7 @@ jobs:
 
     - name: Send to kindle by mail
       uses: dawidd6/action-send-mail@v3
-      if: inputs.send
+      if: inputs.send-to
       with:
         server_address: smtp.dremahost.com
         server_port: 465
