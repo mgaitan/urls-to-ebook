@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       URLS:
-        description: 'List of URLs to include in the EPUB, separated by newline'
+        description: 'List of URLs to include in the EPUB, separated by ;'
         required: true
         type: string
 

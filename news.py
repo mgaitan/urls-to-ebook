@@ -16,7 +16,7 @@ def parse(url):
 
 
 def main():
-    urls = [url.strip() for url in os.getenv("URLS").split("\\n")]
+    urls = [url.strip() for url in os.getenv("URLS").split(";")]
     with tempfile.TemporaryDirectory() as d:
         for i, url in enumerate(urls):
             if not url:
