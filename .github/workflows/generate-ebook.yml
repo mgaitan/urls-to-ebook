@@ -1,0 +1,85 @@
+name: Generate an ebook from a list of URLs
+
+on:
+  workflow_dispatch:
+    inputs:
+      URLS:
+        description: 'List of URLs to include in the ebook, separated by ;'
+        required: true
+        type: string
+      send-to:
+        description: 'Send to this email'
+        type: string
+        required: false
+        default: gaitan@kindle.com
+      commit:
+        description: 'Commit the ebook (mobi) to the repo'
+        required: false
+        type: choice
+        options: 
+          - epub
+          - mobi
+          - both
+
+permissions:
+  contents: write
+
+jobs:
+  build-ebook:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        npm -g install @postlight/mercury-parser
+        sudo apt-get install -y pandoc calibre
+        pip install markdownify
+
+    - name: Run script
+      id: run-script
+      env:
+        URLS: ${{ inputs.URLS }}
+        RUN_ID: ${{ github.RUN_ID }}
+      run: python news.py 
+
+    - name: Send by mail
+      uses: dawidd6/action-send-mail@v3
+      if: inputs.send-to
+      with:
+        server_address: smtp.dreamhost.com
+        server_port: 465
+        secure: true
+        username: calibre@nqnwebs.com
+        password: ${{ secrets.MAIL_PASSWORD }}
+
+        subject: New ebook
+        to: ${{ inputs.send-to }}
+        from: urls-to-ebook Github Action 
+        # Optional plain body:
+        body: New ebook!
+        ignore_cert: true
+        attachments: "*.mobi"
+        
+    - name: Commit and push
+      if: inputs.commit 
+      run: |-
+        if [ "${{ inputs.commit }}" = "mobi" ]; then
+          mv *.mobi ebooks/
+        elif [ "${{ inputs.commit }}" = "epub" ]; then
+          mv *.epub ebooks/
+        elif [ "${{ inputs.commit }}" = "both" ]; then
+          mv *.mobi ebooks/
+          mv *.epub ebooks/
+        fi
+        git config user.name "Automated"
+        git config user.email "actions@users.noreply.github.com"
+        git add ebooks/*.mobi
+        git commit -m "New epub/s added" || exit 0
+        git push
