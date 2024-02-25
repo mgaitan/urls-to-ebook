@@ -28,8 +28,9 @@ def main():
         date = datetime.now().strftime('%Y-%m-%d')
         output = f"news_{date}.epub"
         title = f"News {date}"
-        subprocess.run(["pandoc", *glob(f"{d}/*.md"), "--metadata", f'title="{title}"', '--toc', '--toc-depth=1', '-o', output])   
-        print(f"GENERATED={output}")
+        subprocess.run(["pandoc", *glob(f"{d}/*.md"), "--metadata", f'title="{title}"', '--toc', '--toc-depth=1', '-o', output])
+        subprocess.run(["pandoc", output, f"{output}.mobi"])
+        print(f"generated {output} and the .mobi")
 
 
 if __name__ == '__main__':

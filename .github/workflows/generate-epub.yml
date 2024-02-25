@@ -7,6 +7,17 @@ on:
         description: 'List of URLs to include in the EPUB, separated by ;'
         required: true
         type: string
+      send-to:
+        description: 'Send to this email'
+        type: string
+        required: false
+        default: gaitan@kindle.com
+      commit:
+        description: 'Commit the epub to the repo'
+        required: false
+        type: boolean
+        default: false      
+      
 
 permissions:
   contents: write
@@ -26,20 +37,43 @@ jobs:
     - name: Install dependencies
       run: |
         npm -g install @postlight/mercury-parser
-        sudo apt-get install -y pandoc
+        sudo apt-get install -y pandoc calibre
         pip install markdownify
 
     - name: Run script
       id: run-script
       env:
         URLS: ${{ inputs.URLS }}
-      run: python news.py >> $GITHUB_OUTPUT
+      run: python news.py 
 
-    - name: Publish release
-      uses: softprops/action-gh-release@v1
+    - name: Send to kindle by mail
+      uses: dawidd6/action-send-mail@v3
+      if: inputs.send
       with:
-        files: ${{ steps.run-script.output.GENERATED }}
-        name: ${{ steps.run-script.output.GENERATED }}
-        draft: True
-        body: "Include ${{ inputs.URLS }}"
-        token: ${{ secrets.GITHUB_TOKEN }}
+        server_address: smtp.dremahost.com
+        server_port: 465
+        secure: true
+        username: calibre@nqnwebs.com
+        password: ${{ secrets.MAIL_PASSWORD }}
+
+        subject: New ebook
+        # Required recipients' addresses:
+        to: ${{ inputs.send }}
+        # Required sender full name (address can be skipped):
+        from: urls-to-ebook Github Action 
+        # Optional plain body:
+        body: New ebook!
+        ignore_cert: true
+        attachments: *.mobi
+        
+    - name: Commit and push
+      if: inputs.commit
+      run: |-
+        rm *.epub
+        mv *.mobi ebooks
+        git config user.name "Automated"
+        git config user.email "actions@users.noreply.github.com"
+        git add -A
+        timestamp=$(date -u)
+        git commit -m "New epub added ${timestamp}" || exit 0
+        git push
