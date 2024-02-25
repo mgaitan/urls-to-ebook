@@ -64,7 +64,7 @@ jobs:
         # Optional plain body:
         body: New ebook!
         ignore_cert: true
-        attachments: *.mobi
+        attachments: "*.mobi"
         
     - name: Commit and push
       if: inputs.commit
