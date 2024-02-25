@@ -1,0 +1,42 @@
+name: Generate EPUB from URLs
+
+on:
+  workflow_dispatch:
+    inputs:
+      URLS:
+        description: 'List of URLs to include in the EPUB, separated by newline'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        npm -g install @postlight/mercury-parser
+        sudo apt-get install -y pandoc
+        pip install markdownify
+
+    - name: Run script
+      env:
+        URLS: ${{ inputs.URLS }}
+      run: python news.py
+
+    - name: Publish release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: *.epub
+        body: Include ${{ inputs.URLS }}
+        token: ${{ secrets.GITHUB_TOKEN }}
