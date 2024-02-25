@@ -26,10 +26,11 @@ def main():
             (Path(d) / f"{i:02}.md").write_text(md)
 
         date = datetime.now().strftime('%Y-%m-%d')
-        output = f"news_{date}.epub"
+        run_id = os.getenv("RUN_ID")
+        output = f"news_{date}_{run_id}.epub"
         title = f"News {date}"
         subprocess.run(["pandoc", *glob(f"{d}/*.md"), "--metadata", f'title="{title}"', '--toc', '--toc-depth=1', '-o', output])
-        subprocess.run(["ebook-convert", output, f"{output}.mobi"])
+        subprocess.run(["ebook-convert", output, Path(output).with_suffix(".mobi")])
         print(list(Path(d).iterdir()))
 
 
