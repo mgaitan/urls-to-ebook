@@ -57,8 +57,7 @@ jobs:
         password: ${{ secrets.MAIL_PASSWORD }}
 
         subject: New ebook
-        # Required recipients' addresses:
-        to: ${{ inputs.send }}
+        to: ${{ inputs.send-to }}
         # Required sender full name (address can be skipped):
         from: urls-to-ebook Github Action 
         # Optional plain body:
