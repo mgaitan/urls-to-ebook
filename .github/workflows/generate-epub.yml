@@ -50,7 +50,7 @@ jobs:
       uses: dawidd6/action-send-mail@v3
       if: inputs.send-to
       with:
-        server_address: smtp.dremahost.com
+        server_address: smtp.dreamhost.com
         server_port: 465
         secure: true
         username: calibre@nqnwebs.com
@@ -58,7 +58,6 @@ jobs:
 
         subject: New ebook
         to: ${{ inputs.send-to }}
-        # Required sender full name (address can be skipped):
         from: urls-to-ebook Github Action 
         # Optional plain body:
         body: New ebook!
