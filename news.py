@@ -30,7 +30,7 @@ def main():
         title = f"News {date}"
         subprocess.run(["pandoc", *glob(f"{d}/*.md"), "--metadata", f'title="{title}"', '--toc', '--toc-depth=1', '-o', output])
         subprocess.run(["ebook-convert", output, f"{output}.mobi"])
-        print(list(Path(d).iter_dir()))
+        print(list(Path(d).iterdir()))
 
 
 if __name__ == '__main__':
