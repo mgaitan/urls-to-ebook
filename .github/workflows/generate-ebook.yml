@@ -11,7 +11,7 @@ on:
         description: 'Send to this email'
         type: string
         required: false
-        default: gaitan@kindle.com
+        default: gaitan+kindle@kindle.com
       commit:
         description: 'Commit the ebook (mobi) to the repo'
         required: false
