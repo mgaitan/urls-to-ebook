@@ -17,6 +17,7 @@ on:
         required: false
         type: choice
         options: 
+          - none
           - epub
           - mobi
           - both
@@ -68,7 +69,7 @@ jobs:
         attachments: "*.mobi"
         
     - name: Commit and push
-      if: inputs.commit 
+      if: inputs.commit != 'none'
       run: |-
         if [ "${{ inputs.commit }}" = "mobi" ]; then
           mv *.mobi ebooks/

@@ -11,7 +11,7 @@ from datetime import datetime
 def parse(url):
     cmd = ["mercury-parser", url]
     data = json.loads(subprocess.check_output(cmd, text=True))
-    md = f"<h1>{data['title']}</h1>\n<p>{data['author'] or ''} - {data['url']}</p><hr>{data['content']}"
+    md = f"<h1>{data.get('title', data['url'].rsplit('/')[-1])}</h1>\n<p>{data.get('author') or ''} - {data['url']}</p><hr>{data['content']}"
     return markdownify.markdownify(md)
 
 
